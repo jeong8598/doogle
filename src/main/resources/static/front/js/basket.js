@@ -17,13 +17,17 @@ $(function(){
 	
 	//체크박스 관련
 	var chkAll = $("input:checkbox[name=bno]").length;
+	var chkedNum = $("input:checkbox[name=bno]:checked").length;
 	
 	//체크된상품 따라 버튼 값 변경
-	function btnChk(chkedNum){
-		if(chkAll==0){
+	function chgBtn(){
+		if(chkAll===0){
 				$("#submit").attr("class","btn disable");
 				$("#submit").prop("disabled",true)
 				$("#submit").text("상품을 담아주세요");
+				
+				$(".check-all").prop("checked",false);
+				$(".check-all").prop("disabled",true);
 		}else{
 			if(chkedNum==0){
 				$("#submit").attr("class","btn disable");
@@ -37,55 +41,42 @@ $(function(){
 		}
 	}
 	
-	//구매할 수 있는 상품이 없을 때 전체선택 막기
-	if(chkAll==0){
-		$(".check-all").each(function() {
-			$(this).prop("checked",false);
-			$(this).prop("disabled",true);
-		});
-		btnChk(chkAll);
-	}else{
-		$(".check-all").each(function() {
-			$(this).prop("checked",true);
-			$(this).prop("disabled",false);
-		});
+	//체크된개수, 전체개수 세기
+	function cntNum(){
+		chkAll = $("input:checkbox[name=bno]").length;
+		chkedNum = $("input:checkbox[name=bno]:checked").length;
+		
+		$(".check-num").text(chkedNum);
+		$(".all-num").text(chkAll);
+		chgBtn();
 	}
+	
 	//체크박스 하나 선택
 	$("input:checkbox[name=bno]").on("change",function(){
-		var chkedNum = $("input:checkbox[name=bno]:checked").length;
-		$(".check-num").text(chkedNum);
-		
+		 cntNum();
 		if(chkAll==chkedNum){
 			$(".check-all").prop("checked", true);
-			btnChk(chkedNum);
 		}else{
 			$(".check-all").prop("checked", false);
-			btnChk(chkedNum);
 		}
+		changeTotalPrice();
 	});
 	
 	//전체해제 & 체크
 	$(".check-all").click(function(){
 		var isChk = $(this).is(":checked");
 		if(isChk){
-			$("input:checkbox[name=bno]").each(function() {
-				$(this).prop("checked", true);
-				$(".check-all").prop("checked", true);
-			});
-			$(".check-num").text(chkAll);
-			btnChk(chkAll);
+			$(".check-all").prop("checked", true);
+			$("input:checkbox[name=bno]").prop("checked", true);
 		}else{
-			$("input:checkbox[name=bno]").each(function() {
-				$(".check-all").prop("checked", false);
-				$(this).prop("checked", false);
-			});
-			$(".check-num").text(0);
-			btnChk(0);
+			$(".check-all").prop("checked", false);
+			$("input:checkbox[name=bno]").prop("checked", false);
 		}
-		
+		cntNum();
+		changeTotalPrice();
 	});
 	
-	//수량
+	//수량 올리기
 	$('.btn.plus').on('click',function () {
 		var n = $('.btn.plus').index(this);
 		var num = Number($(".num:eq(" + n + ")").val());
@@ -99,6 +90,7 @@ $(function(){
 		chgQuantity(num,n);
 	});
 	
+	//수량 내리기
 	$('.btn.minus').on('click',function () {
 		var n = $('.btn.minus.off').index(this);
 		var num = Number($(".num:eq(" + n + ")").val());
@@ -123,9 +115,9 @@ $(function(){
 			, data: {
 				quantity:quantity,
 				bno:bno
-			},success: function(result){
+			},success: function(){
 				//$(".totalPrice").eq(index).val(total);
-				changePrice();
+				changePrice(quantity,index);
 				changeTotalPrice();
 				
 			}, error: function(error){
@@ -133,60 +125,59 @@ $(function(){
            	}
 		});
 	}
-	function changePrice(){
-		var price = 0;	//원래가격
-		var discount = 0; //할인율
-		var total = 0; //할인미적용 총금액
-		var earn = 0; //적립률
-		var quantity = 0;	//수량
+	
+	var price = 0;	//원래가격
+	var discount = 0; //할인율
+	var total = 0; //할인미적용 총금액
+	var earn = 0; //적립률
+	var quantity = 0;	//수량
+	
+	var disPrice = 0;	//한개 할인금액
+	var totalEarn = 0;	//할인 후 적립금
+	var totalDiscount = 0;	//총 할인가격
+	var totalPrice = 0;	//할인미적용 총 가격
+	
+	//제품별 가격 계산
+	function changePrice(quantity,index){
+		price = $(".onePrice").eq(index).val()!=null ? parseInt(Number($(".onePrice").eq(index).val())) : 0;
+		discount = $(".discount").eq(index).val()!=null ? Number($(".discount").eq(index).val()) : 0;
+		earn = $(".earn").eq(index).val()!=0 ? Number($(".earn").eq(index).val()) : 5;
+		total = price*quantity;	//총 금액
 		
-		var disPrice = 0;	//한개 할인금액
-		var totalDisPrice = 0;	//할인후총금액
-		var totalEarn = 0;	//할인 후 적립금
-		var totalDiscount = 0;	//총 할인가격
-		var payment = 0;	
-		$("input:checkbox[name=bno]").each(function(index) {
-			price = $(".onePrice").eq(index).val()!=null ? parseInt(Number($(".onePrice").eq(index).val())) : 0;
-			discount = $(".discount").eq(index).val()!=null ? Number($(".discount").eq(index).val()) : 0;
-			earn = $(".earn").eq(index).val()!=null ? Number($(".earn").eq(index).val()) :0 ;
-			quantity = $(".quantity").eq(index).val()!=null ? Number($(".quantity").eq(index).val()) : 0;
+		$(".totalPrice").eq(index).val(total);	//총 금액 넣어주기
+		
+		if(discount>0){	//할인하면
+			$(".in-price").eq(index).find(".cost").text(addComma(total)+'원');	//(할인안한)금액 넣기
 			
-			total = parseInt(price*Number(quantity));
-			totalPrice=addComma(total);	//할인미적용 총가격 콤마추가
+			disPrice = Math.round(price*(1-discount/100));	//1개 할인 후 가격을 넣기
+			totalPrice = disPrice*quantity;	//할인 후 총 금액(=결제금액)
+			totalDiscount = total-totalPrice;	//할인한 금액
+			$(".totalDiscount").eq(index).val(totalDiscount);	//할인금액넣어주기
+		}else{	//할인안하면
+			totalPrice = total;	//총 금액 그대로 결제금액
 			
-			$(".totalPrice").eq(index).val(total);
-			//alert(price);
-			if(discount>0){	//할인하면
-				disPrice = price*(1-discount/100)	//1개 할인 후 가격
-				totalDisPrice = disPrice*quantity	//할인 후 총 가격
-				totalEarn = totalDisPrice*earn/100;		//할인 후 적립금
-				totalDiscount = price*discount/100*quantity;	//총 할인가격
-				payment = addComma(totalDisPrice);
-				
-				$(".selling").eq(index).text(payment+'원');
-				$(".cost").eq(index).text(totalPrice+'원');
-				
-				$(".totalDiscount").eq(index).val(totalDiscount);
-				$(".totalEarn").eq(index).val(Math.round(totalEarn));
-			
-			}else{	//안하면
-				totalEarn = total*earn/100;
-				$(".selling").eq(index).text(totalPrice+'원');
-				
-				$(".totalDiscount").eq(index).val(0);
-				$(".totalEarn").eq(index).val(Math.round(totalEarn));
-			}
-			
-				
-		});		
+			$(".totalDiscount").eq(index).val(0);	//할인금액 = 0
+		}
+		$(".selling").eq(index).text(addComma(totalPrice)+'원');	//결제 금액
+		totalEarn = totalPrice*earn/100;		//적립금 계산
+		$(".totalEarn").eq(index).val(Math.round(totalEarn));	//적립금 넣어주기
 	}
-	//전체값 변경
+	
+	//로드되었을때 총 할인가격과 적립금 넣어주기 (체크박스 변동있을 때 값계산 위해)
+	$("input:checkbox[name=bno]").each(function(index) {
+		quantity = $(".quantity").eq(index).val()!=null ? Number($(".quantity").eq(index).val()) : 0;
+		changePrice(quantity,index);
+	});
+	
+	//총 금액과 배송비계산하기
 	function changeTotalPrice(){
-		var totalPrice = 0;	//총상품금액
-		var totalDiscount = 0;	//총 할인금액
-		var totalEarn = 0;	//총 적립금
+		totalPrice = 0;	//총 상품 금액
+		totalDiscount = 0;	//총 할인금액
+		totalEarn = 0;	//총 적립금
 		var payment = 0;	//결제예정금액
-		$("input:checkbox[name=bno]").each(function(index) {
+		
+		$("input:checkbox[name=bno]:checked").each(function() {
+			var index = $("input:checkbox[name=bno]").index(this);
 			if(Number($(".totalPrice").eq(index).val())!=null){
 				totalPrice += Number($(".totalPrice").eq(index).val());
 			}
@@ -195,21 +186,29 @@ $(function(){
 			}
 			totalEarn += Number($(".totalEarn").eq(index).val());
 		});
-		payment=totalPrice-totalDiscount;
+		
+		payment = totalPrice-totalDiscount;
 		totalPrice = addComma(totalPrice);
 		totalDiscount = addComma(totalDiscount);
 		totalEarn = addComma(totalEarn);
+		
+		//지불금액 4만원이하일 때 배송비 3000원추가됨
 		if(payment<40000){
+			$(".free-limit").remove();
 			$(".fee").text("+3,000");
+			var str = '<p class="free-limit">';
+			str += addComma(40000-payment);
+			str += '원 추가주문 시, <strong>무료배송</strong></p>';
+			$(".lst").before(str);
+			//3000원추가
 			payment=addComma(payment+3000);
 			$(".payment").text(payment);
-			$(".free-limit").remove();
-			
+		//4만원이상일 때
 		}else if(payment>=40000){
 			$(".fee").text("0");
-			payment=addComma(payment);
+			payment = addComma(payment);
 			$(".payment").text(payment);
-			
+			$(".free-limit").remove();
 		}
 		$(".total").text(totalPrice);
 		$(".totalDisPrice").text(totalDiscount);
@@ -221,7 +220,7 @@ $(function(){
     	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 
-	//장바구니 비었을 때
+	//장바구니 비었을 때 안에 넣을 문구
 	function itemChk(){
 		if($(".box").length==0){
 			var div = $(".cart-item").parent();
@@ -232,8 +231,7 @@ $(function(){
 			$(".cart-item>div:first").after(html);
 		}
 	}
-	itemChk();
-	
+
 	//삭제버튼 클릭
 	$(".btn-delete").click(function(){
 		var answer;
@@ -281,23 +279,20 @@ $(function(){
 			,traditional : true
 			, data: {
 				bnoArr : chkArr
-			},success: function(result){
-				changePrice();
-				changeTotalPrice();
-				var all = Number($(".all-num").text());
-				if(chk==1){
-					$(".check-num").text(0);
-					$(".all-num").text(all-chkArr.length);
-				}
-				
+			},success: function(){
 				for(i=0 ;  i<chkArr.length ; i++){
 					var box = $('#bno'+chkArr[i]).parents('.box')
-					var li = $('#bno'+chkArr[i]).parents('li').remove();
+					$('#bno'+chkArr[i]).parents('li').remove();
 					var liCnt = box.find("li").length;
 					if(liCnt==0){
 						box.remove();
 						itemChk();
 					}
+				}
+				if(chk===1){
+					changePrice();
+					changeTotalPrice();
+					cntNum();
 				}
 				
 			}, error: function(error){
@@ -315,22 +310,18 @@ $(function(){
 			,traditional : true
 			, data: {
 				bno:bno
-			},success: function(result){
-				var all = Number($(".all-num").text());
-				var chkedNum = $("input:checkbox[name=bno]:checked").length;
-				changePrice();
-				changeTotalPrice();
-				if(chk==1){
-					$(".check-num").text(chkedNum-1);
-				}
-				$(".all-num").text(all-1);
-
+			},success: function(){
 				var box = $('#bno'+bno).parents('.box')
-				var li = $('#bno'+bno).parents('li').remove();
+				$('#bno'+bno).parents('li').remove();
 				var liCnt = box.find("li").length;
 				if(liCnt==0){
 					box.remove();
 					itemChk();
+				}
+				if(chk===1){
+					changePrice();
+					changeTotalPrice();
+					cntNum();
 				}
 			}
 		});
@@ -403,20 +394,7 @@ $(function(){
 				$(".checkbox_class").eq(i).attr("checked", true);
 			}
 		});
-	})
-	//function check() {
-	//	$(".checkbox_class").each(function(i) {
-	//		var value = $(this).val();
-	//		console.log(value);
-	//		alert(value);
-	//		if (value == 'y'){
-	//			$(".checkbox_class").eq(i).attr("checked", true);
-	//		}
-	//	});
-	//};
-	//
-	//check();
-	
+	});
 	
 	function update() {
 		$(".dno").click(function() {
@@ -438,9 +416,10 @@ $(function(){
 		});
 		alert("기본배송지 변경 완료")
 
-}
+	}
 
-
+	itemChk();
+	chgBtn();
 
 
 

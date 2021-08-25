@@ -10,12 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
-import kr.co.doogle.dto.ProductDTO;
 import kr.co.doogle.mapper.CategoryMapper;
 import kr.co.doogle.mapper.LivingMapper;
-import kr.co.doogle.mapper.ProductMapper;
 import kr.co.doogle.paging.Paging;
 
 @Controller
@@ -26,43 +23,22 @@ public class LivingController {
 	private Paging paging;
 	@Autowired
 	private CategoryMapper categoryMapper;
-	@Autowired
-	private ProductMapper productMapper;
 
 	@RequestMapping("/shop/living")
-	public ModelAndView living(HttpSession session, HttpServletRequest request, ModelAndView mv) {
-		//int mno = 1;
+	public String living(HttpSession session, HttpServletRequest request, Model model) {
 		int mno = Integer.parseInt(session.getAttribute("mno").toString());
-//		int pno = 3;
-//		ArrayList<ProductProductOptionDTO> pList = livingMapper.basketPopup(pno);
-//		if (pList.size() == 1) {
-//			mv.addObject("option", 0);
-//			mv.addObject("dto", pList.get(0));
-//		} else {
-//
-//			mv.addObject("option", pList.size());
-//			mv.addObject("pList", pList);
-//			mv.addObject("name", "[" + pList.get(0).getBrand() + "] " + pList.get(0).getPname());
-//		}
 		
 		int page = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
-		paging.setPaging(page, livingMapper.getTotal(mno), "/shop/living");
-		mv.addObject("list", livingMapper.getAllPaging(paging.getStartRow(), paging.getViewCnt(), mno));
-		mv.addObject("url", "/shop/living");
-		mv.addObject("i", paging.getStartRow());
-		mv.addObject("paging", paging.getPageHtml());
-		mv.addObject("clist", categoryMapper.getAll("where type = #{type} and lv = #{lv}", "p", "0", null));
+		paging.setPaging(page, livingMapper.getTotal(mno), "/shop/living");	//늘사는것 상품수넣고 페이지세팅
+		//한페이지 보여지는 행 수:10 , 페이지 표시 수:10으로 설정되어있음
+		model.addAttribute("list", livingMapper.getAllPaging(paging.getStartRow(), paging.getViewCnt(), mno));
+		model.addAttribute("url", "/shop/living");
+		model.addAttribute("i", paging.getStartRow());
+		model.addAttribute("paging", paging.getPageHtml());
+		//type:카테고리타입 , lv:카테고리레벨, pctno:부모카테고리번호
+		model.addAttribute("clist", categoryMapper.getAll("where type = #{type} and lv = #{lv}", "p", "0", null));
 		
-		mv.setViewName("/front/shop/living/living");
-		return mv;
-	}
-	//장바구니 추가모달
-	@RequestMapping("/shop/addBasketModal")
-	public String addBasket(HttpServletRequest request, PrintWriter out,Model model) {
-		int pno = Integer.parseInt(request.getParameter("pno"));
-		ProductDTO product = productMapper.getOne(pno);
-		model.addAttribute("product",product);
-		return  "redirect:/shop/living";
+		return "/front/shop/living/living";
 	}
 	
 	@RequestMapping("/shop/deleteLiving")

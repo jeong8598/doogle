@@ -55,23 +55,26 @@ const initProductDetail = () => {
 		});
 	});
 
-	$('button.btn-living').bind('click', () => {
+	$('#living-Modal').bind('show.bs.modal', () => {
 		const pno = $('#detail-pno').val();
 		
 		$.post('/shop/putOnLiving', { pno: pno }, (res) => {
 			if (res === 'true')
-				alert('늘 사는것에 추가 되었습니다');
+				$('#living-Modal').find('.msg').text("늘 사는 리스트에 추가했습니다.");
 			else
-				alert('늘 사는것 등록에 실패하였습니다.');
+				$('#living-Modal').find('.msg').text("이미 늘 사는 리스트에 존재하는 상품입니다.");
 		});
 	});
-
+	
 	$('button.btn-basket').bind('click', () => {
 		const pno = $('#detail-pno').val();
+		const quantity = $('#quant').val();
 		
-		$.post('/shop/addBasket', { pno: pno }, (res) => {
-			if (res === 'true')
-				showBasket('장바구니에 추가 되었습니다');
+		$.post('/shop/addBasket', { pno: pno , quantity:quantity }, (res) => {
+			if (res === '2')
+				showBasket('장바구니에 추가 되었습니다.');
+			else if(res === '1')
+				showBasket('장바구니에 추가 되었습니다. 이미 담으신 상품이 있어서 추가했습니다.');
 			else
 				alert('장바구니 추가에 실패하였습니다.');
 		});

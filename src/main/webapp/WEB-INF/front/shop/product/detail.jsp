@@ -31,7 +31,7 @@
 				<span>구매수량</span>
 				<span class="count">
 					<button type="button" class="btn-down">수량내리기</button>
-					<input type="number" readonly="readonly" value="1" name="dsp-cnt" />
+					<input type="number" readonly="readonly" value="1" name="dsp-cnt" id="quant"/>
 					<button type="button" class="btn-up">수량올리기</button>
 				</span>
 			</p>
@@ -39,9 +39,34 @@
 			<p>로그인 후, 적립혜택 제공</p>
 			<p>
 				<button class="btn-alram">재입고 알림</button>
-				<button class="btn-living">늘 사는것</button>
+				<button type="button" class="btn add-living" data-toggle="modal" data-target="#living-Modal" data-whatever="${dto.pno}"> 늘 사는 것 </button>
 				<button class="btn-basket">장바구니 담기</button>
 			</p>
 		</div>
 	</div>
+</div>
+<div class="modal" id="living-Modal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+	  <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="notice-header">
+        <div class="notice-tit">알림메세지</div>
+        <div class="close-btn"><button type="button" class="notice-close-button" data-dismiss="modal">이 메세지를 닫기</button></div>
+      </div>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+		<div class="notice-content">
+			<p class="msg"></p>
+		</div>
+      </div>
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <div class="footer-btn">
+			<button type="button" class="ok-btn" data-dismiss="modal">확인</button> 
+		</div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -91,7 +91,7 @@
 										<div class="stamper count">
 											<input type="hidden" name="stock" value="${btdo.stock }" class="stock">
 											<button type="button" class="btn minus off" data-option="decrease" data-item-id="${bdto.bno }" data-item-value="${bdto.quantity}"> - </button>
-											<input type="number" id="stepperCounter" class="num" readonly="" value="${bdto.quantity}">
+											<input type="number" id="stepperCounter" class="num" readonly="readonly" value="${bdto.quantity}">
 											<button type="button" class="btn plus" data-option="increase" data-item-id="${bdto.bno }" data-item-value="${bdto.quantity}"> + </button>
 										</div>
 									</div>
@@ -145,7 +145,7 @@
 										<input type="hidden" class="totalEarn" value="" >
 										<input type="hidden" class="quantity" value="${bdto.quantity }" >
 										 <c:if test="${bdto.dis_yn eq 'y' }">
-											<span class="selling"><fmt:formatNumber value="${bdto.oprice*bdto.quantity*(1-bdto.discount/100) }" type="number"/><span class="won">원</span></span>
+											<span class="selling"><fmt:formatNumber value="${bdto.quantity*Math.round(bdto.oprice*(1-bdto.discount/100)) }" type="number"/><span class="won">원</span></span>
 											<span class="cost"><fmt:formatNumber value="${bdto.oprice*bdto.quantity }" type="number"/><span class="won">원</span></span>
 										 </c:if>
 										 <c:if test="${bdto.dis_yn ne 'y'}">
@@ -162,7 +162,7 @@
 										<input type="hidden" class="totalEarn" value="" >
 										<input type="hidden" class="quantity" value="${bdto.quantity }" >
 										 <c:if test="${bdto.dis_yn eq 'y' }">
-											<span class="selling"><fmt:formatNumber value="${bdto.pprice*bdto.quantity*(1-bdto.discount/100) }" type="number"/><span class="won">원</span></span>
+											<span class="selling"><fmt:formatNumber value="${bdto.quantity*Math.round(bdto.pprice*(1-bdto.discount/100)) }" type="number"/><span class="won">원</span></span>
 											<span class="cost"><fmt:formatNumber value="${bdto.pprice*bdto.quantity }" type="number"/><span class="won">원</span></span>
 										 </c:if>
 										 <c:if test="${bdto.dis_yn ne 'y'}">
@@ -173,7 +173,7 @@
 										<div class="stamper count">
 											<input type="hidden" name="stock" value="${btdo.stock }" class="stock">
 											<button type="button" class="btn minus off" data-option="decrease" data-item-id="${bdto.bno }" data-item-value="${bdto.quantity}"> - </button>
-											<input type="number" id="stepperCounter" class="num" readonly="" value="${bdto.quantity}">
+											<input type="number" id="stepperCounter" class="num" readonly="readonly" value="${bdto.quantity}">
 											<button type="button" class="btn plus" data-option="increase" data-item-id="${bdto.bno }" data-item-value="${bdto.quantity}"> + </button>
 										</div>
 									</div>
@@ -227,7 +227,7 @@
 										<input type="hidden" class="totalEarn" value="" >
 										<input type="hidden" class="quantity" value="${bdto.quantity }" >
 										 <c:if test="${bdto.dis_yn eq 'y' }">
-											<span class="selling"><fmt:formatNumber value="${bdto.oprice*bdto.quantity*(1-bdto.discount/100) }" type="number"/><span class="won">원</span></span>
+											<span class="selling"><fmt:formatNumber value="${bdto.quantity*Math.round(bdto.oprice*(1-bdto.discount/100)) }" type="number"/><span class="won">원</span></span>
 											<span class="cost"><fmt:formatNumber value="${bdto.oprice*bdto.quantity }" type="number"/><span class="won">원</span></span>
 										 </c:if>
 										 <c:if test="${bdto.dis_yn ne 'y'}">
@@ -244,7 +244,7 @@
 										<input type="hidden" class="totalEarn" value="" >
 										<input type="hidden" class="quantity" value="${bdto.quantity }" >
 										 <c:if test="${bdto.dis_yn eq 'y' }">
-											<span class="selling"><fmt:formatNumber value="${bdto.pprice*bdto.quantity*(1-bdto.discount/100) }" type="number"/><span class="won">원</span></span>
+											<span class="selling"><fmt:formatNumber value="${bdto.quantity*Math.round(bdto.pprice*(1-bdto.discount/100)) }" type="number"/><span class="won">원</span></span>
 											<span class="cost"><fmt:formatNumber value="${bdto.pprice*bdto.quantity }" type="number"/><span class="won">원</span></span>
 										 </c:if>
 										 <c:if test="${bdto.dis_yn ne 'y'}">
@@ -255,7 +255,7 @@
 										<div class="stamper count">
 											<input type="hidden" name="stock" value="${btdo.stock }" class="stock">
 											<button type="button" class="btn minus off" data-option="decrease" data-item-id="${bdto.bno }" data-item-value="${bdto.quantity}"> - </button>
-											<input type="number" id="stepperCounter" class="num" readonly="" value="${bdto.quantity}">
+											<input type="number" id="stepperCounter" class="num" readonly="readonly" value="${bdto.quantity}">
 											<button type="button" class="btn plus" data-option="increase" data-item-id="${bdto.bno }" data-item-value="${bdto.quantity}"> + </button>
 										</div>
 									</div>
@@ -301,7 +301,7 @@
 										<div class="stamper count">
 											<input type="hidden" name="stock" value="${btdo.stock }" class="stock">
 											<button type="button" class="btn minus off" data-option="decrease" data-item-id="${bdto.bno }"> - </button>
-											<input type="number" id="stepperCounter" class="num" readonly="" value="${bdto.quantity}">
+											<input type="number" id="stepperCounter" class="num" readonly="readonly" value="${bdto.quantity}">
 											<button type="button" class="btn plus" data-option="increase" data-item-id="${bdto.bno }"> + </button>
 										</div>
 									</div>
@@ -319,7 +319,7 @@
 				<div class="cart-select">
 					<div class="inner_select">
 						<label class="check"><input type="checkbox" class="check-all" name="check-all" checked>
-							<span class="ico"></span>전체선택(<span class="check-num">${sellableSize }</span>/${sellableSize })
+							<span class="ico"></span>전체선택(<span class="check-num">${sellableSize }</span>/<span class="all-num">${sellableSize }</span>)
 						</label>
 						<input type="button" class="btn-delete" value="선택삭제"/>
 						<c:if test="${dList.size() ne 0 }">
@@ -383,7 +383,7 @@
 								<span class="fee">+<fmt:formatNumber value="3000" type="number"/></span><span class="won">원</span>
 							</dd>
 						</dl>
-						<p class="free-limit"><fmt:formatNumber value="${40000-totalPrice }" type="number"/>원 추가주문 시, <strong>무료배송</strong></p>
+						<p class="free-limit"><fmt:formatNumber value="${40000-payment }" type="number"/>원 추가주문 시, <strong>무료배송</strong></p>
 						<dl class="amount lst">
 							<dt class="tit">결제예정금액</dt>
 							<dd class="price">

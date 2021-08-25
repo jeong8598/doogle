@@ -69,7 +69,9 @@
 						</td>
 						<td>
 							<div class="group-btn">
-								<button type="button" class="btn add-basket" data-toggle="modal" data-target="#basket-modal" data-whatever="${ldto.lno }" data-index> 장바구니 담기 </button>
+								<button type="button" class="btn add-basket" data-toggle="modal" data-target="#basket-modal" 
+								data-pno="${ldto.pno }" data-pname="${ldto.brand } ${ldto.pname }" data-discount="${ldto.discount }" data-pprice="${ldto.pprice }" 
+								data-earn="${ldto.earn }" data-pono="${ldto.pono }"> 장바구니 담기 </button>
 								<%-- <button type="button" onclick="cartLayerOpenAction(${ldto.pno})" name="bno" class="btn btn-positive">장바구니 담기</button> --%>
 								<a href="deleteOneLiving?lno=${ldto.lno }" class="btn delete-one" >삭제</a>
 							</div>
@@ -96,12 +98,10 @@
 	      <!-- Modal body -->
 	      <div class="modal-body">
 	        <div class="inner_option">
-					<c:if test="${option ne 0 }">
-					<strong class="tit_cart">${name }</strong>
-					</c:if>
+					<strong class="tit_cart"></strong>
 					<div class="in_option">
 						<div class="list_goods">
-							<c:if test="${option ne 0 }">
+	<%-- 						<c:if test="${option ne 0 }">	//옵션있는것은 미완료
 							<ul class="list">
 							<c:forEach var="dto" items="${pList }">
 								<li class="on">
@@ -135,38 +135,33 @@
 							</c:forEach>
 							</ul>
 							</c:if>
-							<c:if test="${option eq 0 }">
+							<c:if test="${option eq 0 }"> --%>
 								<ul class="list list_nopackage">
 									<li class="on">
-										<input type="hidden" name="mno" id="mno" value="${mno }">
-										<input type="hidden" name="pno" id="pno" value="${dto.pno }">
-										<input type="hidden" name="pono" id="pono"value="${dto.pono }">
-										<input type="hidden" name="price" id="price" class="one-price" value="${dto.pprice }">
-										<input type="hidden" name="earn" class="earn" value="${dto.earn }">
+										<input type="hidden" name="pno" id="pno">
+										<input type="hidden" name="pono" id="pono">
+										<input type="hidden" name="price" id="price" class="one-price" >
+										<input type="hidden" name="earn" id="earn" class="earn">
+										<input type="hidden" name="discount" id="discount" class="discount">
 										<span class="btn_position">
 											<button type="button" class="btn_del">
 												<span class="txt">삭제하기</span>
 											</button>
 										</span>
-										<span class="name"> ${dto.brand } ${dto.pname }</span>
+										<span class="name"> </span>
 										<div class="option">
 											<span class="count">
 											<button type="button" class="btn down on">수량내리기</button>
-											<input type="number" name="quantity" readonly="readonly" value="0" onchange="chgTotalPrice()" onfocus="this.blur()" class="inp">
+											<input type="number" name="quantity" readonly="readonly" value="0" onfocus="this.blur()" class="inp">
 											<button type="button" class="btn up on">수량올리기</button></span>
 											<span class="price">
-											<c:if test="${dto.dis_yn eq 'y'}">
-												<span class="dc_price"><span class="price-box">${dto.pprice }</span>원</span>
-												<span class="original_price"><span class="price-box">${dto.pprice*(1-dto.discount/100) }</span>원</span>
-											</c:if>
-											<c:if test="${dto.dis_yn eq 'n'}">
-												<span class="dc_price"><span class="price-box">${dto.pprice }</span>원</span>
-											</c:if>
+												<span class="dc_price"><span class="price-box"> </span>원</span>
+												<span class="original_price"><span class="price-box"> </span>원</span>
 											</span>
 										</div>
 									</li>
 								</ul>
-							</c:if>
+							<%-- </c:if> --%>
 						</div>
 						<div class="total">
 							<div class="price">
@@ -200,7 +195,6 @@
 </form>
 
 <!-- 늘사는것 추가 -->
-<button type="button" class="btn add-living" data-toggle="modal" data-target="#living-Modal" data-whatever="1"> 늘 사는 것 </button>
 <div class="modal" id="living-Modal">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">

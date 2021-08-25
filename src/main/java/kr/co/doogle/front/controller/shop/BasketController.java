@@ -38,7 +38,6 @@ public class BasketController {
 		if (!member.isLogin(session))
 			return "redirect:/login";
 		
-		//int mno = 1;
 		String id = session.getAttribute("id").toString();
 		String mno = session.getAttribute("mno").toString();
 		
@@ -120,10 +119,10 @@ public class BasketController {
 			if(count != 0) {
 				int quantity = basketMapper.cntQuantity(bdto)+bdto.getQuantity();
 				int num = basketMapper.updateQuantity(bdto,quantity);
-				out.print(2);
+				out.print(num);
 			}else {
 				basketMapper.addBasket(bdto);
-				out.print(1);
+				out.print(2);
 			}
 		}
 		
